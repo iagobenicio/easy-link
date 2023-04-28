@@ -2,25 +2,72 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using easy_link.Context;
 using easy_link.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace easy_link.Repositories
 {
     public class LinkRepository : ILinkRepository
-    {
-        public void Delete(int Id)
+    {   
+        private readonly EasylinkContext _easyLink;
+
+        public LinkRepository(EasylinkContext easylinkContext)
         {
-            throw new NotImplementedException();
+            _easyLink = easylinkContext;
         }
 
-        public Task Register(Link entity)
+        public async Task Delete(int Id)
         {
-            throw new NotImplementedException();
+            var entity = _easyLink.link!.Find(Id);
+            if (entity == null)
+            {   
+                throw new Exception("Entidade não encontrada");
+            }
+            _easyLink.link!.Remove(entity);
+            await _easyLink.SaveChangesAsync();
+        }
+        public List<Link> GetAll(int userId)
+        {
+            var userLinks = _easyLink.link!.Where(link => link.UserId == userId).ToList();
+            return userLinks;
+        }       
+        public async Task Register(Link link)
+        {   
+            try
+            {
+               await _easyLink.link!.AddAsync(link);
+               await _easyLink.SaveChangesAsync();
+            }
+            catch (OperationCanceledException e)
+            {
+                throw new OperationCanceledException(e.Message);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                throw new DbUpdateException(e.Message);
+            }
         }
 
-        public Task Update(Link entity, int Id)
-        {
-            throw new NotImplementedException();
+        public async Task Update(Link link, int userId)
+        {   
+            var entity = await _easyLink.link!.Where(link => link.Id == link.Id && link.UserId == userId).FirstOrDefaultAsync();
+
+            if (entity == null)
+            {
+                throw new Exception("dado não encontrada");
+            }
+
+            var linkUpdated = MapperToLinkDb(link,entity);
+
+            _easyLink.link!.Update(linkUpdated);
+            await _easyLink.SaveChangesAsync();            
+        }
+        private Link MapperToLinkDb(Link linkUpdate, Link linkDb)
+        {   
+            linkDb.LinkName = linkUpdate.LinkName;
+            linkDb.UrlDirection = linkUpdate.UrlDirection;
+            return linkDb;
         }
     }
 }

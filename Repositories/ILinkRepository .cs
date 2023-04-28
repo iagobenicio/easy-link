@@ -8,6 +8,7 @@ namespace easy_link.Repositories
 {
     public interface ILinkRepository : IRepository<Link>
     {
-        public void Delete(int Id);
+        public Task Delete(int Id);
+        public List<Link> GetAll(int userId);
     }
 }
