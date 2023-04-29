@@ -38,7 +38,11 @@ namespace easy_link.Repositories
         public async Task RegisterWithPassWord(User user, String passWord)
         {  
             try
-            {
+            {   
+                
+                user.UserName = user.Email;
+                user.Email = user.UserName;
+
                 var result = await _userManager.CreateAsync(user,passWord);
 
                 if (!result.Succeeded)
