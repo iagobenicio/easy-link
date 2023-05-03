@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using easy_link.Context;
 using easy_link.Entities;
+using easy_link.Failures;
 using Microsoft.EntityFrameworkCore;
 
 namespace easy_link.Repositories
@@ -20,11 +21,12 @@ namespace easy_link.Repositories
         public async Task Delete(int Id)
         {
             var entity = _easyLink.link!.Find(Id);
+
             if (entity == null)
-            {   
-                throw new Exception("Entidade não encontrada");
-            }
+                throw new LinkNotFoundException("Link não encontrado");
+
             _easyLink.link!.Remove(entity);
+
             await _easyLink.SaveChangesAsync();
         }
         public List<Link> GetAll(int userId)
@@ -54,20 +56,29 @@ namespace easy_link.Repositories
             var entity = await _easyLink.link!.Where(link => link.Id == link.Id && link.PageId == userId).FirstOrDefaultAsync();
 
             if (entity == null)
+                throw new LinkNotFoundException("Link não encontrado");
+
+            MapperToLinkDb(link,entity);
+
+            try
             {
-                throw new Exception("dado não encontrada");
+                _easyLink.link!.Update(entity);
+                await _easyLink.SaveChangesAsync(); 
             }
-
-            var linkUpdated = MapperToLinkDb(link,entity);
-
-            _easyLink.link!.Update(linkUpdated);
-            await _easyLink.SaveChangesAsync();            
+            catch (OperationCanceledException e)
+            {
+                throw new OperationCanceledException(e.Message);
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                throw new DbUpdateException(e.Message);
+            }
+                       
         }
-        private Link MapperToLinkDb(Link linkUpdate, Link linkDb)
+        private void MapperToLinkDb(Link linkUpdate, Link linkDb)
         {   
             linkDb.LinkName = linkUpdate.LinkName;
             linkDb.UrlDirection = linkUpdate.UrlDirection;
-            return linkDb;
         }
     }
 }
