@@ -14,7 +14,7 @@ namespace easy_link.Entities
         [Required]
         public string? UrlDirection { get; set; }
         public int ClicksCount { get; set; }
-        public int UserId { get; set; }
-        public User? User { get; set; }
+        public int PageId { get; set; }
+        public Page? Page { get; set; }
     }
 }

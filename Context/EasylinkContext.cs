@@ -13,6 +13,7 @@ namespace easy_link.Context
     {
        public EasylinkContext(DbContextOptions<EasylinkContext> options) : base (options) {}
        public DbSet<User>? user { get; set; }
+       public DbSet<Page>? page { get; set; }
        public DbSet<Link>? link { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

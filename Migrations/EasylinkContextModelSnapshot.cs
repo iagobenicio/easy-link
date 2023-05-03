@@ -17,7 +17,7 @@ namespace easy_link.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0-preview.3.23174.2")
+                .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -170,18 +170,36 @@ namespace easy_link.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PageId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UrlDirection")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
+                    b.HasKey("Id");
+
+                    b.HasIndex("PageId");
+
+                    b.ToTable("link");
+                });
+
+            modelBuilder.Entity("easy_link.Entities.Page", b =>
+                {
+                    b.Property<int>("Id")
                         .HasColumnType("int");
+
+                    b.Property<string>("PageDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PageName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("link");
+                    b.ToTable("page");
                 });
 
             modelBuilder.Entity("easy_link.Entities.User", b =>
@@ -197,10 +215,6 @@ namespace easy_link.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -315,18 +329,34 @@ namespace easy_link.Migrations
 
             modelBuilder.Entity("easy_link.Entities.Link", b =>
                 {
-                    b.HasOne("easy_link.Entities.User", "User")
+                    b.HasOne("easy_link.Entities.Page", "Page")
                         .WithMany("Links")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("PageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Page");
+                });
+
+            modelBuilder.Entity("easy_link.Entities.Page", b =>
+                {
+                    b.HasOne("easy_link.Entities.User", "User")
+                        .WithOne("Page")
+                        .HasForeignKey("easy_link.Entities.Page", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("easy_link.Entities.User", b =>
+            modelBuilder.Entity("easy_link.Entities.Page", b =>
                 {
                     b.Navigation("Links");
+                });
+
+            modelBuilder.Entity("easy_link.Entities.User", b =>
+                {
+                    b.Navigation("Page");
                 });
 #pragma warning restore 612, 618
         }

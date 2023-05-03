@@ -29,8 +29,8 @@ namespace easy_link.Repositories
         }
         public List<Link> GetAll(int userId)
         {
-            var userLinks = _easyLink.link!.Where(link => link.UserId == userId).ToList();
-            return userLinks;
+            var pageLinks = _easyLink.link!.Where(link => link.PageId == userId).ToList();
+            return pageLinks;
         }       
         public async Task Register(Link link)
         {   
@@ -51,7 +51,7 @@ namespace easy_link.Repositories
 
         public async Task Update(Link link, int userId)
         {   
-            var entity = await _easyLink.link!.Where(link => link.Id == link.Id && link.UserId == userId).FirstOrDefaultAsync();
+            var entity = await _easyLink.link!.Where(link => link.Id == link.Id && link.PageId == userId).FirstOrDefaultAsync();
 
             if (entity == null)
             {
