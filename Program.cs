@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using easy_link.DTOs;
 using easy_link.Entities;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,10 @@ IMapper mapper = config.CreateMapper();
 
 // Add services to the container.
 builder.Services.AddDbContext<EasylinkContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddIdentity<User,IdentityRole<int>>( cfg => 
+{
+    cfg.User.RequireUniqueEmail = true;
+}).AddEntityFrameworkStores<EasylinkContext>().AddDefaultTokenProviders();
 builder.Services.AddSingleton(mapper);
 
 builder.Services.AddControllers();
@@ -33,6 +38,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
