@@ -26,12 +26,12 @@ namespace easy_link.Repositories
         {
             throw new NotImplementedException();
         }
-        public async Task<User> GetUser(int Id)
+        public async Task<User> GetUser(String email)
         {   
-            var user = await _userManager.FindByIdAsync(Id.ToString());
+            var user = await _userManager.FindByNameAsync(email);
             if (user == null)
             {
-                throw new Exception("Não foi possivel encontrar seus dados");
+                throw new UserNotFound("Não foi possivel encontrar seus dados");
             }
             return user;
         }

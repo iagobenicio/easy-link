@@ -10,6 +10,6 @@ namespace easy_link.Repositories
     {   
         public Task RegisterWithPassWord(User user, string passWord);
         public Task SignIn(String email, String passWord);
-        public Task<User> GetUser(int Id);
+        public Task<User> GetUser(String email);
     }
 }
