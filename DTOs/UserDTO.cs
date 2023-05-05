@@ -9,16 +9,13 @@ namespace easy_link.DTOs
     public class UserDTO
     {   
         [Required(ErrorMessage = "Preencha o campo nome de usuário")]
-        public string? UserName { get; set; }
+        public String? UserName { get; set; }
 
         [Required(ErrorMessage = "Preencha o campo email")]
         [EmailAddress]
-        public string? Email { get; set; }
+        public String? Email { get; set; }
 
         [Required(ErrorMessage = "Preencha o campo senha")]
-        public string? Password { get; set; }
-
-        [Required(ErrorMessage = "Preencha o campo descrição")]        
-        public string? Description { get; set; }
+        public String? Password { get; set; }
     }
 }
