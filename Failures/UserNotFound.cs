@@ -9,7 +9,7 @@ namespace easy_link.Failures
     {
         public String? Menssage {get;set;}
 
-        public UserNotFound(string? message)
+        public UserNotFound(String? message)
         {
             Menssage = message;
         }

@@ -11,7 +11,7 @@ namespace easy_link.Failures
         public String? mensage { get; set; }
         public IEnumerable<IdentityError>? errors {get; set;}
 
-        public UserFailure(IEnumerable<IdentityError>? errorsArgument, string? mensageArgument)
+        public UserFailure(IEnumerable<IdentityError>? errorsArgument, String? mensageArgument)
         {
             errors = errorsArgument;
             mensage = mensageArgument;

@@ -34,17 +34,17 @@ namespace easy_link.Controllers
 
         [HttpPost("/register")]
         public async Task<IActionResult> RegisterWithPassword(UserDTO userDTO)
-        {
+        {   
             try
             {
-
                var userEntity = _mapper.Map<User>(userDTO);
+               
                await _userRepository.RegisterWithPassWord(userEntity,userDTO.Password!);
 
                return StatusCode(StatusCodes.Status201Created);
             }
             catch (UserFailure e)
-            {   
+            {
                 return BadRequest(new {e.mensage,e.errors});
             }
             catch (Exception e)
