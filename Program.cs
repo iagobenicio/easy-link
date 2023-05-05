@@ -4,6 +4,10 @@ using AutoMapper;
 using easy_link.DTOs;
 using easy_link.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using easy_link.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +22,30 @@ builder.Services.AddDbContext<EasylinkContext>(options => options.UseSqlServer(b
 builder.Services.AddIdentity<User,IdentityRole<int>>( cfg => 
 {
     cfg.User.RequireUniqueEmail = true;
+    cfg.Password.RequireUppercase = false;
+    cfg.Password.RequireLowercase = false;
+    cfg.Password.RequireNonAlphanumeric = false;
 }).AddEntityFrameworkStores<EasylinkContext>().AddDefaultTokenProviders();
+
 builder.Services.AddSingleton(mapper);
 
+builder.Services.AddScoped<IUserRepository,UserRepository>();
+builder.Services.AddScoped<ILinkRepository,LinkRepository>();
+builder.Services.AddScoped<IPageRepository,PageRepository>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer( options => {
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
+        {   
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("[JWT:Key]"))
+        };
+    }
+);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
