@@ -37,56 +37,29 @@ namespace easy_link.Repositories
         }
         public async Task RegisterWithPassWord(User user, String passWord)
         {  
-            try
-            {   
-                
-                user.UserName = user.Email;
-                user.Email = user.UserName;
+ 
+            var result = await _userManager.CreateAsync(user,passWord);
 
-                var result = await _userManager.CreateAsync(user,passWord);
+            if (!result.Succeeded)
+                throw new UserFailure(result.Errors,"Não foi possivel se registrar");
 
-                if (!result.Succeeded)
-                    throw new UserFailure(result.Errors,"Não foi possivel se registrar");
-
-            }
-            catch (Exception e)
-            {    
-                throw new Exception($"Erro: {e.Message}");
-            } 
-           
-           
         }
         public async Task SignIn(string email, string passWord)
         {   
-            try
-            {
-                var result = await _signInManager.PasswordSignInAsync(email,passWord,false,false);
-            
-                if (!result.Succeeded)
-                    throw new Exception("Não foi possível fazer a autenticação, verifique suas credenciaias");
-            }
-            catch (Exception e)
-            {    
-                throw new Exception($"Erro: {e.Message}");
-            } 
 
+            var result = await _signInManager.PasswordSignInAsync(email,passWord,false,false);
+        
+            if (!result.Succeeded)
+                throw new Exception("Não foi possível fazer a autenticação, verifique suas credenciaias");
+        
         }
 
         public async Task Update(User user, int Id)
         {
-            try
-            {
-
-                var result = await _userManager.UpdateAsync(user);
-            
-                if (!result.Succeeded)
-                    throw new UserFailure(result.Errors,"Não foi possivel alterar os dados");
-
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Erro: {e.Message}");
-            }
+            var result = await _userManager.UpdateAsync(user);
+        
+            if (!result.Succeeded)
+                throw new UserFailure(result.Errors,"Não foi possivel alterar os dados");
 
         }
     }
