@@ -14,6 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 var config = new MapperConfiguration(cfg => 
 {
     cfg.CreateMap<UserDTO,User>();
+    cfg.CreateMap<Page,DashboardDTO>();
+    cfg.CreateMap<RegisterPageDTO,Page>();
+    cfg.CreateMap<RegisterLinkDTO,Link>();
+    cfg.CreateMap<Page,PageDto>();
+    cfg.CreateMap<Link,LinkDTO>();
 });
 IMapper mapper = config.CreateMapper();
 
