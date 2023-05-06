@@ -9,6 +9,7 @@ namespace easy_link.Repositories
     public interface IPageRepository : IRepository<Page>
     {   
         public Page GetByPageName(string pageName);
+        public Page GetByUserId(int userId);
         public Task Delete(int Id);
     }
 }

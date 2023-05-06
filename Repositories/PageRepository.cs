@@ -22,16 +22,34 @@ namespace easy_link.Repositories
         {
             var entity = _easyLink.page!.Find(Id);
             if (entity == null)
-                throw new PageNotFoundException("Você não tem uma página");
+                throw new PageNotFoundException("Você não tem uma página para deletar");
 
             _easyLink.Remove(entity);
             await _easyLink.SaveChangesAsync();
 
         }
+        public Page GetByUserId(int userId)
+        {
+            var page = _easyLink.page!.Where(p => p.Id == userId).Include(p => p.Links).FirstOrDefault();
 
+            if (page == null)
+                throw new PageNotFoundException("Página não encontrada");
+
+            return page;
+      
+        }
         public Page GetByPageName(string pageName)
         {
-            var page = _easyLink.page!.Where(p => p.PageName == pageName).FirstOrDefault();
+            var page = _easyLink.page!.Where(p => p.PageName!.ToLower() == pageName.ToLower())
+                .Select(p => new Page(){
+                    ImageProfile = p.ImageProfile,
+                    PageName = p.PageName,
+                    PageDescription = p.PageDescription,
+                    Links = p.Links!.Select(l => new Link(){
+                        LinkName = l.LinkName,
+                        UrlDirection = l.UrlDirection
+                    }).ToList()
+                }).FirstOrDefault();
 
             if (page == null)
                 throw new PageNotFoundException("Página não encontrada");
@@ -41,24 +59,14 @@ namespace easy_link.Repositories
 
         public async Task Register(Page entity)
         {   
-            try
-            {   var pageExist = _easyLink.page!.Any(p => p.PageName!.ToLower() == entity.PageName!.ToLower());
-            
-                if (pageExist)
-                    throw new RegisterPageException("Este nome de página já existe");
+            var pageExist = _easyLink.page!
+                .Any(p => p.PageName!.ToLower() == entity.PageName!.ToLower() || p.Id == entity.Id);
+        
+            if (pageExist)
+                throw new RegisterPageException("Este nome de página já existe ou você já tem uma página");
 
-                await _easyLink.page!.AddAsync(entity);
-                await _easyLink.SaveChangesAsync();
-            }
-            catch (OperationCanceledException e)
-            {
-                throw new OperationCanceledException(e.Message);
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                throw new DbUpdateException(e.Message);
-            }
-            
+            await _easyLink.page!.AddAsync(entity);
+            await _easyLink.SaveChangesAsync();
         }
 
         public async Task Update(Page entity, int Id)
@@ -67,27 +75,22 @@ namespace easy_link.Repositories
 
             if (page == null)
                 throw new PageNotFoundException("Você não tem uma página");
-            
-            try
-            {
-                MapperToPageDb(entity,page);
-                _easyLink.page!.Update(page);
-                await _easyLink.SaveChangesAsync();
-            }
-            catch (OperationCanceledException e)
-            {
-                throw new OperationCanceledException(e.Message);
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                throw new DbUpdateException(e.Message);
-            }
+
+            var pageNameExist = _easyLink.page!.Any(p => p.PageName!.ToUpper() == entity.PageName!.ToUpper() && p.Id != Id); 
+
+            if (pageNameExist)
+                throw new UpdatePageException("Este nome de página já existe");
+
+            MapperToPageDb(entity,page);
+            _easyLink.page!.Update(page);
+            await _easyLink.SaveChangesAsync();
             
         }
         private void MapperToPageDb(Page entity, Page pageDb)
         {
             pageDb.PageName = entity.PageName;
             pageDb.PageDescription = entity.PageDescription;
+            pageDb.ImageProfile = entity.ImageProfile;
         }
     }
 }
