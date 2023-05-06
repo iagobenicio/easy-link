@@ -79,8 +79,8 @@ namespace easy_link.Controllers
             var userClaims = new[]
             {   
                 new Claim(JwtRegisteredClaimNames.NameId,user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email,user.UserName!),
-                new Claim(JwtRegisteredClaimNames.UniqueName,user.Email!)
+                new Claim(JwtRegisteredClaimNames.Email,user.Email!),
+                new Claim(JwtRegisteredClaimNames.UniqueName,user.UserName!)
             };
 
             var credentials = new SigningCredentials(key,SecurityAlgorithms.HmacSha256);
