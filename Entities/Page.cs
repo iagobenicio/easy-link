@@ -15,6 +15,7 @@ namespace easy_link.Entities
         public string? PageName { get; set; }
         [Required]
         public string? PageDescription { get; set; }
+        public byte[]? ImageProfile {get;set;}
         public User? User { get; set; }
         public ICollection<Link>? Links { get; set; }
     }
