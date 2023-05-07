@@ -18,9 +18,9 @@ namespace easy_link.Repositories
             _easyLink = easylinkContext;
         }
 
-        public async Task Delete(int Id)
+        public async Task Delete(int Id, int PageId)
         {
-            var entity = _easyLink.link!.Find(Id);
+            var entity = _easyLink.link!.Where(l => l.Id == Id && l.PageId == PageId).FirstOrDefault();
 
             if (entity == null)
                 throw new LinkNotFoundException("Link não encontrado");
@@ -29,26 +29,11 @@ namespace easy_link.Repositories
 
             await _easyLink.SaveChangesAsync();
         }
-        public List<Link> GetAll(int userId)
-        {
-            var pageLinks = _easyLink.link!.Where(link => link.PageId == userId).ToList();
-            return pageLinks;
-        }       
+        
         public async Task Register(Link link)
         {   
-            try
-            {
-               await _easyLink.link!.AddAsync(link);
-               await _easyLink.SaveChangesAsync();
-            }
-            catch (OperationCanceledException e)
-            {
-                throw new OperationCanceledException(e.Message);
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                throw new DbUpdateException(e.Message);
-            }
+            await _easyLink.link!.AddAsync(link);
+            await _easyLink.SaveChangesAsync(); 
         }
 
         public async Task Update(Link link, int userId)
@@ -60,21 +45,11 @@ namespace easy_link.Repositories
 
             MapperToLinkDb(link,entity);
 
-            try
-            {
-                _easyLink.link!.Update(entity);
-                await _easyLink.SaveChangesAsync(); 
-            }
-            catch (OperationCanceledException e)
-            {
-                throw new OperationCanceledException(e.Message);
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                throw new DbUpdateException(e.Message);
-            }
-                       
+            _easyLink.link!.Update(entity);
+            await _easyLink.SaveChangesAsync(); 
+                           
         }
+
         private void MapperToLinkDb(Link linkUpdate, Link linkDb)
         {   
             linkDb.LinkName = linkUpdate.LinkName;
