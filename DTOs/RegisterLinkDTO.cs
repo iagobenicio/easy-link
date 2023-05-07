@@ -10,7 +10,8 @@ namespace easy_link.DTOs
     {   
         [Required(ErrorMessage = "Preencha o campo linkName")]
         public string? LinkName { get; set; }
-        [Required(ErrorMessage = "Preencha o campo linkName")]
+        
+        [Required(ErrorMessage = "Preencha o campo UrlDirection")]
         public string? UrlDirection { get; set; }
     }
 }
