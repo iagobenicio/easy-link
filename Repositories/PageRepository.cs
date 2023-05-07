@@ -86,6 +86,23 @@ namespace easy_link.Repositories
             await _easyLink.SaveChangesAsync();
             
         }
+
+        public async Task UdateImage(int pageId, byte[] image)
+        {
+            var entity = _easyLink.page!.FirstOrDefault(p => p.Id == pageId);
+
+            if (entity == null)
+                throw new PageNotFoundException("Você não tem uma página");
+
+            entity.ImageProfile = image;
+
+            _easyLink.page!.Attach(entity);
+
+            _easyLink.Entry(entity).Property(p => p.ImageProfile).IsModified = true;
+
+            await _easyLink.SaveChangesAsync();
+        }
+
         private void MapperToPageDb(Page entity, Page pageDb)
         {
             pageDb.PageName = entity.PageName;

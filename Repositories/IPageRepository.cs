@@ -10,6 +10,7 @@ namespace easy_link.Repositories
     {   
         public Page GetByPageName(string pageName);
         public Page GetByUserId(int userId);
+        public Task UdateImage(int pageId, byte[] image);
         public Task Delete(int Id);
     }
 }

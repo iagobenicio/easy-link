@@ -188,6 +188,53 @@ namespace easy_link.Controllers
             {
                 return BadRequest(new {Erro = $"{e.Message}"});
             }
-        } 
+        }
+
+        [Authorize]
+        [HttpPatch]
+        public async Task<IActionResult> UpdateImage(IFormFile imageProfile)
+        {   
+            try
+            {
+                if (imageProfile == null || imageProfile.Length == 0)
+                {
+                    return BadRequest(new {Erro = "Nenhum arquivo enviado"});
+                }
+    
+                var userIdAndpageId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    
+                if (userIdAndpageId == null)
+                {
+                    return BadRequest();                
+                }
+    
+                using(MemoryStream memoryStream = new MemoryStream())
+                {
+                    await imageProfile.CopyToAsync(memoryStream);
+                    var bytes = memoryStream.ToArray();
+                    
+                    await _pageRepository.UdateImage(int.Parse(userIdAndpageId),bytes);
+    
+                    return Ok();
+                }
+            }
+            catch (PageNotFoundException e)
+            {
+                return NotFound(new {Erro = $"{e.Menssage}"});
+            }
+            catch (OperationCanceledException)
+            {
+                return BadRequest(new {Erro = "Operação cancelada"});
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest(new {Erro = "Erro ao salvar as alterações"});
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new {Erro = $"{e.Message}"});
+            }
+
+        }
     }
 }
