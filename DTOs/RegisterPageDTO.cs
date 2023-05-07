@@ -13,6 +13,7 @@ namespace easy_link.DTOs
         
         [Required(ErrorMessage = "Preencha o campo pagedescription")]
         public string? PageDescription { get; set; }
+        
         public byte[]? ImageProfile { get; set; }
     }
 }
