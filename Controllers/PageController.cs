@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web;
 using AutoMapper;
 using easy_link.DTOs;
 using easy_link.Entities;
@@ -23,7 +24,6 @@ namespace easy_link.Controllers
     {
         private readonly IPageRepository _pageRepository;
         private readonly IMapper _mapper;
-
         public PageController(IPageRepository pageRepository, IMapper mapper)
         {
             _pageRepository = pageRepository;
@@ -36,7 +36,11 @@ namespace easy_link.Controllers
             try
             {
                 var page = _pageRepository.GetByPageName(pagename);
+
                 var pageDto = _mapper.Map<PageDto>(page);
+
+                pageDto.ImageUrl = $"{Request.Scheme}://{Request.Host.Value}/page/image/{pagename}";
+
                 return Ok(pageDto);
             }
             catch (PageNotFoundException e)
@@ -64,6 +68,8 @@ namespace easy_link.Controllers
                 var userPage = _pageRepository.GetByUserId(int.Parse(userId));
 
                 var userPageDTO = _mapper.Map<DashboardDTO>(userPage);
+
+                userPageDTO.ImageUrl = $"{Request.Scheme}://{Request.Host.Value}/page/image/{userPageDTO.PageName!.ToLower()}";
 
                 return Ok(userPageDTO);
 
@@ -188,6 +194,28 @@ namespace easy_link.Controllers
             {
                 return BadRequest(new {Erro = $"{e.Message}"});
             }
+        }
+
+
+        [HttpGet("image/{pagename}")]
+        public IActionResult GetImage(string pagename)
+        {
+            
+            try
+            {
+                if (pagename == "" || pagename == null)
+                    return BadRequest("Digite um nome de página válido");
+                    
+                var image = _pageRepository.GetImage(pagename);
+
+                return File(image!,"image/jpeg");
+
+            }
+            catch (PageNotFoundException e)
+            {
+                return NotFound(new {e.Menssage});
+            }
+
         }
 
         [Authorize]

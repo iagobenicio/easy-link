@@ -11,7 +11,7 @@ namespace easy_link.DTOs
         public int Id { get; set; }
         public string? PageName { get; set; }
         public string? PageDescription { get; set; }
-        public byte[]? ImageProfile { get; set; }
-        public ICollection<Link>? Links { get; set; }
+        public String? ImageUrl {get;set;}
+        public ICollection<DashboardLinkDTO>? Links { get; set; }
     }
 }

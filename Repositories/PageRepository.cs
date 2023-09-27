@@ -30,7 +30,18 @@ namespace easy_link.Repositories
         }
         public Page GetByUserId(int userId)
         {
-            var page = _easyLink.page!.Where(p => p.Id == userId).Include(p => p.Links).FirstOrDefault();
+            var page = _easyLink.page!.Where(p => p.Id == userId)
+                .Select(p => new Page(){
+                    Id = p.Id,
+                    PageName = p.PageName,
+                    PageDescription = p.PageDescription,
+                    Links = p.Links!.Select(l => new Link(){
+                        Id = l.Id,
+                        LinkName = l.LinkName,
+                        UrlDirection = l.UrlDirection,
+                        PageId = l.PageId
+                    }).ToList()
+                }).FirstOrDefault();
 
             if (page == null)
                 throw new PageNotFoundException("Página não encontrada");
@@ -42,7 +53,6 @@ namespace easy_link.Repositories
         {
             var page = _easyLink.page!.Where(p => p.PageName!.ToLower() == pageName.ToLower())
                 .Select(p => new Page(){
-                    ImageProfile = p.ImageProfile,
                     PageName = p.PageName,
                     PageDescription = p.PageDescription,
                     Links = p.Links!.Select(l => new Link(){
@@ -87,6 +97,16 @@ namespace easy_link.Repositories
             
         }
 
+        public byte[] GetImage(string pageName)
+        {   
+            var image = _easyLink.page!.Where(p => p.PageName!.ToLower() == pageName.ToLower()).Select(p => p.ImageProfile).FirstOrDefault();
+            
+            if(image == null)
+                throw new PageNotFoundException("Não foi encontrado uma página com este nome");
+
+            return image;
+        }
+
         public async Task UdateImage(int pageId, byte[] image)
         {
             var entity = _easyLink.page!.FirstOrDefault(p => p.Id == pageId);
@@ -107,7 +127,7 @@ namespace easy_link.Repositories
         {
             pageDb.PageName = entity.PageName;
             pageDb.PageDescription = entity.PageDescription;
-            pageDb.ImageProfile = entity.ImageProfile;
+            pageDb.ImageProfile = pageDb.ImageProfile;
         }
     }
 }

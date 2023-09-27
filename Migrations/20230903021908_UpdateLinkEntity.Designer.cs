@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using easy_link.Context;
 
@@ -11,9 +12,11 @@ using easy_link.Context;
 namespace easy_link.Migrations
 {
     [DbContext(typeof(EasylinkContext))]
-    partial class EasylinkContextModelSnapshot : ModelSnapshot
+    [Migration("20230903021908_UpdateLinkEntity")]
+    partial class UpdateLinkEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

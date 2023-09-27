@@ -13,12 +13,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 var config = new MapperConfiguration(cfg => 
 {
-    cfg.CreateMap<UserDTO,User>();
-    cfg.CreateMap<Page,DashboardDTO>();
+    cfg.CreateMap<UserDTO,User>();   
     cfg.CreateMap<RegisterPageDTO,Page>();
     cfg.CreateMap<RegisterLinkDTO,Link>();
-    cfg.CreateMap<Page,PageDto>();
+    cfg.CreateMap<Page,DashboardDTO>().ForMember(p => p.ImageUrl, opt => opt.Ignore());
+    cfg.CreateMap<Page,PageDto>().ForMember(p => p.ImageUrl, opt => opt.Ignore());
     cfg.CreateMap<Link,LinkDTO>();
+    cfg.CreateMap<Link,DashboardLinkDTO>();
 });
 IMapper mapper = config.CreateMapper();
 

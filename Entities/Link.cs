@@ -13,7 +13,6 @@ namespace easy_link.Entities
         public string? LinkName { get; set; }
         [Required]
         public string? UrlDirection { get; set; }
-        public int ClicksCount { get; set; }
         public int PageId { get; set; }
     }
 }
